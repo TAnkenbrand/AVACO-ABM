@@ -6,55 +6,57 @@
 
 using namespace std;
 
-int trend(int ii, int jj, double fprices[8050][13], int a1, int a2)
+double prices[8050][13];
+
+int trend(int ii, int jj, int a1, int a2)
 {
-	if (fprices[ii - jj][a2] > fprices[ii - jj - a1][a2]) return 1;
-	if (fprices[ii - jj][a2] < fprices[ii - jj - a1][a2]) return -1;
+	if (prices[ii - jj][a2] > prices[ii - jj - a1][a2]) return 1;
+	if (prices[ii - jj][a2] < prices[ii - jj - a1][a2]) return -1;
 	else return 0;
 }
-int contrarien(int ii, int jj, double fprices[8050][13], int a1, int a2)
+int contrarien(int ii, int jj, int a1, int a2)
 {
-	if (fprices[ii - jj][a2] < fprices[ii - jj - a1][a2]) return 1;
-	if (fprices[ii - jj][a2] > fprices[ii - jj - a1][a2]) return -1;
+	if (prices[ii - jj][a2] < prices[ii - jj - a1][a2]) return 1;
+	if (prices[ii - jj][a2] > prices[ii - jj - a1][a2]) return -1;
 	else return 0;
 }
-int fundamentalistt(int ii, int jj, double fprices[8050][13], int a1, int a2, int ttt)
+int fundamentalistt(int ii, int jj, int a1, int a2, int ttt)
 {
-	if (((fprices[ii - jj][ttt] - fprices[ii - jj - a1][ttt]) / fprices[ii - jj - a1][ttt]) > ((fprices[ii - jj][a2] - fprices[ii - jj - a1][a2]) / fprices[ii - jj - a1][a2])) return 1;
-	if (((fprices[ii - jj][ttt] - fprices[ii - jj - a1][ttt]) / fprices[ii - jj - a1][ttt]) < ((fprices[ii - jj][a2] - fprices[ii - jj - a1][a2]) / fprices[ii - jj - a1][a2])) return -1;
+	if (((prices[ii - jj][ttt] - prices[ii - jj - a1][ttt]) / prices[ii - jj - a1][ttt]) > ((prices[ii - jj][a2] - prices[ii - jj - a1][a2]) / prices[ii - jj - a1][a2])) return 1;
+	if (((prices[ii - jj][ttt] - prices[ii - jj - a1][ttt]) / prices[ii - jj - a1][ttt]) < ((prices[ii - jj][a2] - prices[ii - jj - a1][a2]) / prices[ii - jj - a1][a2])) return -1;
 	else return 0;
 }
-int fundamentalistc(int ii, int jj, double fprices[8050][13], int a1, int a2, int ttt)
+int fundamentalistc(int ii, int jj, int a1, int a2, int ttt)
 {
-	if (((fprices[ii - jj][ttt] - fprices[ii - jj - a1][ttt]) / fprices[ii - jj - a1][ttt]) < ((fprices[ii - jj][a2] - fprices[ii - jj - a1][a2]) / fprices[ii - jj - a1][a2])) return 1;
-	if (((fprices[ii - jj][ttt] - fprices[ii - jj - a1][ttt]) / fprices[ii - jj - a1][ttt]) > ((fprices[ii - jj][a2] - fprices[ii - jj - a1][a2]) / fprices[ii - jj - a1][a2])) return -1;
+	if (((prices[ii - jj][ttt] - prices[ii - jj - a1][ttt]) / prices[ii - jj - a1][ttt]) < ((prices[ii - jj][a2] - prices[ii - jj - a1][a2]) / prices[ii - jj - a1][a2])) return 1;
+	if (((prices[ii - jj][ttt] - prices[ii - jj - a1][ttt]) / prices[ii - jj - a1][ttt]) > ((prices[ii - jj][a2] - prices[ii - jj - a1][a2]) / prices[ii - jj - a1][a2])) return -1;
 	else return 0;
 }
-int matrend(int ii, int jj, double fprices[8050][13], int a1, int a2)
-{
-	int kk;
-	double ma = 0;
-	for (kk = 0; kk < a1; kk++) {
-		ma = ma + fprices[ii - jj - kk][a2];
-	}
-	ma = ma / kk;
-	if (ma < fprices[ii - jj][a2]) return 1;
-	if (ma > fprices[ii - jj][a2]) return -1;
-	else return 0;
-}
-int macontrarien(int ii, int jj, double fprices[8050][13], int a1, int a2)
+int matrend(int ii, int jj, int a1, int a2)
 {
 	int kk;
 	double ma = 0;
 	for (kk = 0; kk < a1; kk++) {
-		ma = ma + fprices[ii - jj - kk][a2];
+		ma = ma + prices[ii - jj - kk][a2];
 	}
 	ma = ma / kk;
-	if (ma > fprices[ii - jj][a2]) return 1;
-	if (ma < fprices[ii - jj][a2]) return -1;
+	if (ma < prices[ii - jj][a2]) return 1;
+	if (ma > prices[ii - jj][a2]) return -1;
 	else return 0;
 }
-int doptimizer(int iii, int jjj, double ffprices[8050][13], int ttt, int nn, int dd)
+int macontrarien(int ii, int jj, int a1, int a2)
+{
+	int kk;
+	double ma = 0;
+	for (kk = 0; kk < a1; kk++) {
+		ma = ma + prices[ii - jj - kk][a2];
+	}
+	ma = ma / kk;
+	if (ma > prices[ii - jj][a2]) return 1;
+	if (ma < prices[ii - jj][a2]) return -1;
+	else return 0;
+}
+int doptimizer(int iii, int jjj, int ttt, int nn, int dd)
 {
 	int ftickeri[8050][3], aa, bb, cc, fagentsi[5];
 	double ftickerd[8050][3], fmaxperformance, fmaxdrawdown, fdynamic_maxperformance, fdynamic_maxdrawdown, fprofit[8050];
@@ -86,15 +88,15 @@ int doptimizer(int iii, int jjj, double ffprices[8050][13], int ttt, int nn, int
 				fagentsi[2] = cc;		//Time Series
 				fagentsi[4] = 0;		//Order
 				for (jjj = dd; jjj >= 1; jjj--) {
-					if (fagentsi[0] == 1) fagentsi[4] = trend(iii, jjj, ffprices, fagentsi[1], fagentsi[2]);
-					if (fagentsi[0] == 2) fagentsi[4] = contrarien(iii, jjj, ffprices, fagentsi[1], fagentsi[2]);
-					if (fagentsi[0] == 3) fagentsi[4] = fundamentalistt(iii, jjj, ffprices, fagentsi[1], fagentsi[2], ttt);
-					if (fagentsi[0] == 4) fagentsi[4] = fundamentalistc(iii, jjj, ffprices, fagentsi[1], fagentsi[2], ttt);
-					if (fagentsi[0] == 5) fagentsi[4] = matrend(iii, jjj, ffprices, fagentsi[1], fagentsi[2]);
-					if (fagentsi[0] == 6) fagentsi[4] = macontrarien(iii, jjj, ffprices, fagentsi[1], fagentsi[2]);
+					if (fagentsi[0] == 1) fagentsi[4] = trend(iii, jjj, fagentsi[1], fagentsi[2]);
+					if (fagentsi[0] == 2) fagentsi[4] = contrarien(iii, jjj, fagentsi[1], fagentsi[2]);
+					if (fagentsi[0] == 3) fagentsi[4] = fundamentalistt(iii, jjj, fagentsi[1], fagentsi[2], ttt);
+					if (fagentsi[0] == 4) fagentsi[4] = fundamentalistc(iii, jjj, fagentsi[1], fagentsi[2], ttt);
+					if (fagentsi[0] == 5) fagentsi[4] = matrend(iii, jjj, fagentsi[1], fagentsi[2]);
+					if (fagentsi[0] == 6) fagentsi[4] = macontrarien(iii, jjj, fagentsi[1], fagentsi[2]);
 
 					//Dynamic Performance
-					fprofit[jjj - 1] = fprofit[jjj] + fagentsi[4] * (ffprices[iii - jjj + 1][ttt] - ffprices[iii - jjj][ttt]) / ffprices[iii - jjj][ttt];
+					fprofit[jjj - 1] = fprofit[jjj] + fagentsi[4] * (prices[iii - jjj + 1][ttt] - prices[iii - jjj][ttt]) / prices[iii - jjj][ttt];
 					if (fdynamic_maxperformance < fprofit[jjj]) {
 						fdynamic_maxperformance = fprofit[jjj];
 					}
@@ -120,12 +122,12 @@ int doptimizer(int iii, int jjj, double ffprices[8050][13], int ttt, int nn, int
 	fagentsi[4] = 0;					//Order
 	jjj = 0;
 
-	if (fagentsi[0] == 1) fagentsi[4] = trend(iii, jjj, ffprices, fagentsi[1], fagentsi[2]);
-	if (fagentsi[0] == 2) fagentsi[4] = contrarien(iii, jjj, ffprices, fagentsi[1], fagentsi[2]);
-	if (fagentsi[0] == 3) fagentsi[4] = fundamentalistt(iii, jjj, ffprices, fagentsi[1], fagentsi[2], ttt);
-	if (fagentsi[0] == 4) fagentsi[4] = fundamentalistc(iii, jjj, ffprices, fagentsi[1], fagentsi[2], ttt);
-	if (fagentsi[0] == 5) fagentsi[4] = matrend(iii, jjj, ffprices, fagentsi[1], fagentsi[2]);
-	if (fagentsi[0] == 6) fagentsi[4] = macontrarien(iii, jjj, ffprices, fagentsi[1], fagentsi[2]);
+	if (fagentsi[0] == 1) fagentsi[4] = trend(iii, jjj, fagentsi[1], fagentsi[2]);
+	if (fagentsi[0] == 2) fagentsi[4] = contrarien(iii, jjj, fagentsi[1], fagentsi[2]);
+	if (fagentsi[0] == 3) fagentsi[4] = fundamentalistt(iii, jjj, fagentsi[1], fagentsi[2], ttt);
+	if (fagentsi[0] == 4) fagentsi[4] = fundamentalistc(iii, jjj, fagentsi[1], fagentsi[2], ttt);
+	if (fagentsi[0] == 5) fagentsi[4] = matrend(iii, jjj, fagentsi[1], fagentsi[2]);
+	if (fagentsi[0] == 6) fagentsi[4] = macontrarien(iii, jjj, fagentsi[1], fagentsi[2]);
 	
 	ofstream DOTickerFile("AVACO ABM DOTicker.csv", ios::app);
 	DOTickerFile << iii << ";" << fagentsi[4] << ";" << ftickeri[iii][0] << ";" << ftickeri[iii][1] << ";" << ftickeri[iii][2] << endl;
@@ -137,7 +139,7 @@ int doptimizer(int iii, int jjj, double ffprices[8050][13], int ttt, int nn, int
 int main()
 {
 	int i, j, k, a, c, e, f, g, h, n, tt, agentsi[3][5];
-	double prices[8050][13], agentsd[3][4], ticker[8050][4];
+	double agentsd[3][4], ticker[8050][4];
 	string line, value;
 	double orders, volume, maxperformance, maxdrawdown, efficency, b, d, ma, r, s;
 
@@ -204,13 +206,13 @@ int main()
 											efficency = 0;
 											for (i = 36; i < n; i++) {
 												for (j = 0; j < 3; j++) {
-													if (agentsi[j][0] == 1) agentsi[j][4] = trend(i, 0, prices, agentsi[j][1], agentsi[j][2]);
-													if (agentsi[j][0] == 2) agentsi[j][4] = contrarien(i, 0, prices, agentsi[j][1], agentsi[j][2]);
-													if (agentsi[j][0] == 3) agentsi[j][4] = fundamentalistt(i, 0, prices, agentsi[j][1], agentsi[j][2], tt);
-													if (agentsi[j][0] == 4) agentsi[j][4] = fundamentalistc(i, 0, prices, agentsi[j][1], agentsi[j][2], tt);
-													if (agentsi[j][0] == 5) agentsi[j][4] = matrend(i, 0, prices, agentsi[j][1], agentsi[j][2]);
-													if (agentsi[j][0] == 6) agentsi[j][4] = macontrarien(i, 0, prices, agentsi[j][1], agentsi[j][2]);
-													if (agentsi[j][0] == 7) agentsi[j][4] = doptimizer(i, 0, prices, tt, n, agentsi[j][1]);
+													if (agentsi[j][0] == 1) agentsi[j][4] = trend(i, 0, agentsi[j][1], agentsi[j][2]);
+													if (agentsi[j][0] == 2) agentsi[j][4] = contrarien(i, 0, agentsi[j][1], agentsi[j][2]);
+													if (agentsi[j][0] == 3) agentsi[j][4] = fundamentalistt(i, 0, agentsi[j][1], agentsi[j][2], tt);
+													if (agentsi[j][0] == 4) agentsi[j][4] = fundamentalistc(i, 0, agentsi[j][1], agentsi[j][2], tt);
+													if (agentsi[j][0] == 5) agentsi[j][4] = matrend(i, 0, agentsi[j][1], agentsi[j][2]);
+													if (agentsi[j][0] == 6) agentsi[j][4] = macontrarien(i, 0, agentsi[j][1], agentsi[j][2]);
+													if (agentsi[j][0] == 7) agentsi[j][4] = doptimizer(i, 0, tt, n, agentsi[j][1]);
 
 
 													if (agentsd[j][1] > 0) {
@@ -234,7 +236,12 @@ int main()
 												}
 												ticker[i + 1][1] = orders;
 												ticker[i + 1][0] = prices[i][tt] * (1 + (orders / (50 * volume)));
-												ticker[i + 1][2] = ticker[i][2] + (orders / abs(orders)) * (prices[i + 1][tt] - prices[i][tt]) / prices[i][tt];
+												if (orders == 0) {
+													ticker[i + 1][2] = ticker[i][2];
+												}
+												if (orders != 0) {
+													ticker[i + 1][2] = ticker[i][2] + (orders / abs(orders)) * (prices[i + 1][tt] - prices[i][tt]) / prices[i][tt];
+												}
 												if (maxperformance < ticker[i][2]) {
 													maxperformance = ticker[i][2];
 												}
