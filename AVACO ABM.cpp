@@ -32,30 +32,6 @@ int fundamentalistc(int ii, int jj, int a1, int a2, int ttt)
 	if (((prices[ii - jj][ttt] - prices[ii - jj - a1][ttt]) / prices[ii - jj - a1][ttt]) > ((prices[ii - jj][a2] - prices[ii - jj - a1][a2]) / prices[ii - jj - a1][a2])) return -1;
 	else return 0;
 }
-int matrend(int ii, int jj, int a1, int a2)
-{
-	int kk;
-	double ma = 0;
-	for (kk = 0; kk < a1; kk++) {
-		ma = ma + prices[ii - jj - kk][a2];
-	}
-	ma = ma / kk;
-	if (ma < prices[ii - jj][a2]) return 1;
-	if (ma > prices[ii - jj][a2]) return -1;
-	else return 0;
-}
-int macontrarien(int ii, int jj, int a1, int a2)
-{
-	int kk;
-	double ma = 0;
-	for (kk = 0; kk < a1; kk++) {
-		ma = ma + prices[ii - jj - kk][a2];
-	}
-	ma = ma / kk;
-	if (ma > prices[ii - jj][a2]) return 1;
-	if (ma < prices[ii - jj][a2]) return -1;
-	else return 0;
-}
 int doptimizer(int iii, int jjj, int ttt, int nn, int dd)
 {
 	int ftickeri[8050][3], aa, bb, cc, fagentsi[5];
@@ -80,10 +56,10 @@ int doptimizer(int iii, int jjj, int ttt, int nn, int dd)
 	}
 	fdynamic_maxperformance = 0;
 	fdynamic_maxdrawdown = 0;
-	for (aa = 1; aa < 7; aa++) {
+	for (aa = 1; aa < 5; aa++) {
 		for (bb = 1; bb < 13; bb++) {
 			for (cc = 0; cc < 13; cc++) {
-				fagentsi[0] = aa;		//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian, 5:MA Trend, 6:MA Contrarian, 7:Rebalancer
+				fagentsi[0] = aa;		//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian
 				fagentsi[1] = bb;		//Time Lag: 1-12
 				fagentsi[2] = cc;		//Time Series
 				fagentsi[4] = 0;		//Order
@@ -92,8 +68,6 @@ int doptimizer(int iii, int jjj, int ttt, int nn, int dd)
 					if (fagentsi[0] == 2) fagentsi[4] = contrarien(iii, jjj, fagentsi[1], fagentsi[2]);
 					if (fagentsi[0] == 3) fagentsi[4] = fundamentalistt(iii, jjj, fagentsi[1], fagentsi[2], ttt);
 					if (fagentsi[0] == 4) fagentsi[4] = fundamentalistc(iii, jjj, fagentsi[1], fagentsi[2], ttt);
-					if (fagentsi[0] == 5) fagentsi[4] = matrend(iii, jjj, fagentsi[1], fagentsi[2]);
-					if (fagentsi[0] == 6) fagentsi[4] = macontrarien(iii, jjj, fagentsi[1], fagentsi[2]);
 
 					//Dynamic Performance
 					fprofit[jjj - 1] = fprofit[jjj] + fagentsi[4] * (prices[iii - jjj + 1][ttt] - prices[iii - jjj][ttt]) / prices[iii - jjj][ttt];
@@ -116,7 +90,7 @@ int doptimizer(int iii, int jjj, int ttt, int nn, int dd)
 		}
 	}
 	// Forecast
-	fagentsi[0] = ftickeri[iii][0];		//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian, 5:MA Trend, 6:MA Contrarian
+	fagentsi[0] = ftickeri[iii][0];		//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian,
 	fagentsi[1] = ftickeri[iii][1];		//Time Lag: 1-12
 	fagentsi[2] = ftickeri[iii][2];		//Time Series
 	fagentsi[4] = 0;					//Order
@@ -126,8 +100,6 @@ int doptimizer(int iii, int jjj, int ttt, int nn, int dd)
 	if (fagentsi[0] == 2) fagentsi[4] = contrarien(iii, jjj, fagentsi[1], fagentsi[2]);
 	if (fagentsi[0] == 3) fagentsi[4] = fundamentalistt(iii, jjj, fagentsi[1], fagentsi[2], ttt);
 	if (fagentsi[0] == 4) fagentsi[4] = fundamentalistc(iii, jjj, fagentsi[1], fagentsi[2], ttt);
-	if (fagentsi[0] == 5) fagentsi[4] = matrend(iii, jjj, fagentsi[1], fagentsi[2]);
-	if (fagentsi[0] == 6) fagentsi[4] = macontrarien(iii, jjj, fagentsi[1], fagentsi[2]);
 	
 	ofstream DOTickerFile("AVACO ABM DOTicker.csv", ios::app);
 	DOTickerFile << iii << ";" << fagentsi[4] << ";" << ftickeri[iii][0] << ";" << ftickeri[iii][1] << ";" << ftickeri[iii][2] << endl;
@@ -172,7 +144,7 @@ int main()
 									for (r = 0; r <= 0.1; r += 0.01) {
 										for (s = 0; s <= 0.01; s += 0.005) {*/
 //Initialisation Agent1
-											agentsi[0][0] = 7; //e;			//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian, 5:MA Trend, 6:MA Contrarian, 7:Dynamic Optimizer
+											agentsi[0][0] = 5; //e;			//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian, 5:Dynamic Optimizer
 											agentsi[0][1] = 20; // a;		//Time Lag: 1-12, Time Lag Optimizer: 1 - 25
 											agentsi[0][2] = 1; // g;		//Time Series
 											agentsd[0][0] = 0.01; // b;		//Trading Ratio
@@ -180,7 +152,7 @@ int main()
 											agentsd[0][2] = 0.01;	//Asset
 											agentsd[0][3] = 0;		//Order
 //Initialisation Agent2
-											agentsi[1][0] = 1; //f 		//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian, 5:MA Trend, 6:MA Contrarian, 7:Dynamic Optimizer
+											agentsi[1][0] = 1; //f 		//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian, 5:Dynamic Optimizer
 											agentsi[1][1] = 1;	//c		//Time Lag: 1-12
 											agentsi[1][2] = 1;	//g		//Time Series
 											agentsd[1][0] = 0;	//d		//Trading Ratio
@@ -188,7 +160,7 @@ int main()
 											agentsd[1][2] = 0.01;	//Asset
 											agentsd[1][3] = 0;		//Order
 //Initialisation Agent3
-											agentsi[2][0] = 1;		//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian, 5:MA Trend, 6:MA Contrarian, 7:Dynamic Optimizer
+											agentsi[2][0] = 1;		//Typ: 1:Trend, 2:Contrarian, 3:Fundamentalist Trend, 4:Fundamentalist Contrarian, 5:Dynamic Optimizer
 											agentsi[2][1] = 6;		//Time Lag: 1-12
 											agentsi[2][2] = 7;		//Time Series
 											agentsd[2][0] = 0; // r	//Trading Ratio
@@ -210,9 +182,7 @@ int main()
 													if (agentsi[j][0] == 2) agentsi[j][4] = contrarien(i, 0, agentsi[j][1], agentsi[j][2]);
 													if (agentsi[j][0] == 3) agentsi[j][4] = fundamentalistt(i, 0, agentsi[j][1], agentsi[j][2], tt);
 													if (agentsi[j][0] == 4) agentsi[j][4] = fundamentalistc(i, 0, agentsi[j][1], agentsi[j][2], tt);
-													if (agentsi[j][0] == 5) agentsi[j][4] = matrend(i, 0, agentsi[j][1], agentsi[j][2]);
-													if (agentsi[j][0] == 6) agentsi[j][4] = macontrarien(i, 0, agentsi[j][1], agentsi[j][2]);
-													if (agentsi[j][0] == 7) agentsi[j][4] = doptimizer(i, 0, tt, n, agentsi[j][1]);
+													if (agentsi[j][0] == 5) agentsi[j][4] = doptimizer(i, 0, tt, n, agentsi[j][1]);
 
 
 													if (agentsd[j][1] > 0) {
