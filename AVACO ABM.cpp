@@ -2,107 +2,138 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <time.h>
 
 using namespace std;
 
-double prices[8305][13];
+//Configuartion
+const int nd = 979;		//number of datasets
+const int nm = 8;		//number of markets/time series
+const int na = 2;		//number of agents
+
+double prices[nd][nm];	//time series
+int t;					//time
+
+struct agents 
+{
+	int agenti[4];						//Dependent, Independent, Strategy, Time Lag
+	double agentd[1];					//Order Ratio
+	double agenta[nm + 1], agento[nm];	//Assets (USD, Prices), Orders (Prices)
+};
+
 
 #include "AVACO ABM TS.h"
 #include "AVACO ABM O.h"
 
 int main()
 {
-	int i, j, k, n, nts;
-	double profit[8305][13];
-	double agent[2][8];
-	string line, value;
-	double orders[13], volume[13], maxperformance[13], maxdrawdown[13], efficency[13];
+	agents agent[na];
 
-	n = 8304;	//number of datasets 8305
-	nts = 13;	//number of time series
-		
+	int i, j;
+	double profit[nd][nm];
+	string line, value;
+	double orders[nm], volume[nm], maxperformance[nm], maxdrawdown[nm], efficency[nm], trend[nm];
+
 	//Read prices
 	ifstream PriceFile("AVACO ABM Price.csv");
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < nd; i++) {
 		getline(PriceFile, line);
 		stringstream ss(line);
-		for (j = 0; j < nts; j++) {
+		for (j = 0; j < nm; j++) {
 			getline(ss, value, ',');
 			prices[i][j] = stod(value);
 		}
 	}
 	PriceFile.close();
 
-//Initialization Agents
+	//Initialization Agents
 	ifstream AgentFile("AVACO ABM Agents.csv");
-	for (i = 0; i < 2; i++) {
+	for (i = 0; i < na; i++) {
 		getline(AgentFile, line);
 		stringstream ss(line);
-		for (j = 0; j < 8; j++) {
+		for (j = 0; j < 4; j++) {
 			getline(ss, value, ',');
-			agent[i][j] = stod(value);
+			agent[i].agenti[j] = stoi(value);
+		}
+		for (j = 0; j < 4; j++) {
+			getline(ss, value, ',');
+			agent[i].agentd[j] = stod(value);
+		}
+		for (j = 0; j < 9; j++) {
+			getline(ss, value, ',');
+			agent[i].agenta[j] = stod(value);
 		}
 	}
 	AgentFile.close();
-		
-	for (i = 0; i < n; i++) {
-		for (j = 0; j < nts; j++) {
+	
+	for (i = 0; i < nd; i++) {
+		for (j = 0; j < nm; j++) {
 			profit[i][j] = 0;
 		}
 	}
-	for (j = 0; j < nts; j++) {
+	for (j = 0; j < nm; j++) {
 		maxperformance[j] = 0;
 		maxdrawdown[j] = 0;
 		efficency[j] = 0;
+		trend[j] = 0;
 	}
-	
-	for (i = 36; i < n; i++) {
-		for (j = 0; j < nts; j++) {
-			for (k = 0; k < 2; k++) {
-				if (agent[k][0] == j) agent[k][7] = order_calculation(agent[k][2], agent[k][3], agent[k][1], agent[k][4], agent[k][5], agent[k][6], i, j, n);
-			}
 
-//Price Calculation
+	for (t = 36; t < nd - 1; t++) {
+
+		//Calculation Trading Strategy and Order		
+		for (i = 0; i < na; i++) {
+			for (j = 0; j < nm; j++) {
+				agent[i].agento[j] = 0;
+				//agent[i].agento[j] = trade_calculation(agent[i].agenti[0], agent[i].agenti[1], agent[i].agenti[3]);
+				//agent[i].agento[j] = order_calculation(agent[i], j);
+			}
+		}
+
+		//Price Calculation
+		for (j = 0; j < nm; j++) {
 			orders[j] = 0;
 			volume[j] = 0.0001;
-			for (k = 0; k < 2; k++) {
-				if (agent[k][0] == j) {
-					orders[j] = orders[j] + agent[k][7];
-					volume[j] = volume[j] + abs(agent[k][7]);
+			for (i = 0; i < na; i++) {
+				orders[j] = orders[j] + agent[i].agento[j];
+				volume[j] = volume[j] + abs(agent[i].agento[j]);
+			}
+
+			//Clearing and Settlement of the Orders
+			for (i = 0; i < na; i++) {
+				if (agent[i].agenti[0] == j) {
+					agent[i].agentd[1] = agent[i].agentd[2] - agent[i].agentd[3] * prices[t + 1][j];
+					agent[i].agentd[2] = agent[i].agentd[2] + agent[i].agentd[3];
+					agent[i].agentd[3] = 0;
 				}
 			}
+
+			//Learning / adaptation of the agents configuration
+
+			//Calculation of the Performance Indicators
 			if (orders[j] == 0) {
-				profit[i + 1][j] = profit[i][j];
+				profit[t + 1][j] = profit[t][j];
 			}
 			if (orders[j] != 0) {
-				profit[i + 1][j] = profit[i][j] + (orders[j] / abs(orders[j])) * (prices[i + 1][j] - prices[i][j]) / prices[i][j];
+				profit[t + 1][j] = profit[t][j] + (orders[j] / abs(orders[j])) * (prices[t + 1][j] - prices[t][j]) / prices[t][j];
 			}
 
-//Clearing and Settlement of the Orders
-			for (k = 0; k < 2; k++) {
-				if (agent[k][0] == j) {
-					agent[k][5] = agent[k][5] - agent[k][7] * prices[i + 1][j];
-					agent[k][6] = agent[k][6] + agent[k][7];
-					agent[k][7] = 0;
-				}
-			}
+			if (orders[j] * (prices[t + 1][j] - prices[t][j]) > 0) trend[j] = trend[j] + 1;
 
-//Calculation of the Performance Indicators
-			if (maxperformance[j] < profit[i][j]) {
-				maxperformance[j] = profit[i][j];
+			if (maxperformance[j] < profit[t][j]) {
+				maxperformance[j] = profit[t][j];
 			}
-			if (maxdrawdown[j] < maxperformance[j] - profit[i][j]) {
-				maxdrawdown[j] = maxperformance[j] - profit[i][j];
+			if (maxdrawdown[j] < maxperformance[j] - profit[t][j]) {
+				maxdrawdown[j] = maxperformance[j] - profit[t][j];
 			}
-			efficency[j] = efficency[j] + abs((prices[i][j] - prices[i - 1][j]) / prices[i - 1][j]);
+			efficency[j] = efficency[j] + abs((prices[t][j] - prices[t - 1][j]) / prices[t - 1][j]);
 		}
-//		efficency[j] = profit[n - 1][j] / (efficency[j] - abs((prices[36][j] - prices[35][j]) / prices[35][j]));
 	}
-	
+
 	ofstream PerformanceFile("AVACO ABM Performance.csv");
-	for (j = 0; j < nts; j++) {
-		efficency[j] = profit[n - 1][j] / (efficency[j] - abs((prices[36][j] - prices[35][j]) / prices[35][j]));
-		PerformanceFile << profit[n-1][j] << ";" << efficency[j] << ";" << maxdrawdown[j] << endl;
+	for (j = 0; j < nm; j++) {
+		efficency[j] = profit[nd - 1][j] / (efficency[j] - abs((prices[36][j] - prices[35][j]) / prices[35][j]));
+		trend[j] = trend[j] / (nd - 36);
+		PerformanceFile << trend[j] << ";" << profit[nd - 1][j] << ";" << efficency[j] << ";" << maxdrawdown[j] << endl;
 	}
 	PerformanceFile.close();
 }
