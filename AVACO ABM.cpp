@@ -84,8 +84,11 @@ int main()
 		for (i = 0; i < na; i++) {
 			for (j = 0; j < nm; j++) {
 				agent[i].agento[j] = 0;
-				//agent[i].agento[j] = trade_calculation(agent[i].agenti[0], agent[i].agenti[1], agent[i].agenti[3]);
-				//agent[i].agento[j] = order_calculation(agent[i], j);
+				if (agent[i].agenti[0] = j) {
+					agent[i].agento[j] = trade_calculation(agent[i].agenti[0], agent[i].agenti[1], agent[i].agenti[2], agent[i].agenti[3]);
+				}
+				
+				agent[i].agento[j] = order_calculation(agent[i], j);
 			}
 		}
 
@@ -95,19 +98,8 @@ int main()
 			volume[j] = 0.0001;
 			for (i = 0; i < na; i++) {
 				orders[j] = orders[j] + agent[i].agento[j];
-				volume[j] = volume[j] + abs(agent[i].agento[j]);
+//				volume[j] = volume[j] + abs(agent[i].agento[j]);
 			}
-
-			//Clearing and Settlement of the Orders
-			for (i = 0; i < na; i++) {
-				if (agent[i].agenti[0] == j) {
-					agent[i].agentd[1] = agent[i].agentd[2] - agent[i].agentd[3] * prices[t + 1][j];
-					agent[i].agentd[2] = agent[i].agentd[2] + agent[i].agentd[3];
-					agent[i].agentd[3] = 0;
-				}
-			}
-
-			//Learning / adaptation of the agents configuration
 
 			//Calculation of the Performance Indicators
 			if (orders[j] == 0) {
@@ -127,6 +119,13 @@ int main()
 			}
 			efficency[j] = efficency[j] + abs((prices[t][j] - prices[t - 1][j]) / prices[t - 1][j]);
 		}
+
+		//Clearing and Settlement of the Orders
+		for (i = 0; i < na; i++) {
+			agent[i] = clearing_settlement(agent[i]);
+		}
+
+		//Learning / adaptation of the agents configuration
 	}
 
 	ofstream PerformanceFile("AVACO ABM Performance.csv");

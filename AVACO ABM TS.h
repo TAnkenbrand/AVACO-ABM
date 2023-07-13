@@ -1,7 +1,7 @@
-int trend(int aai0, int aai3)
+int trend(int aai0, int aai1, int aai3)
 {
-	if (prices[t][aai0] > prices[t - aai3][aai0]) return 1;
-	if (prices[t][aai0] < prices[t - aai3][aai0]) return -1;
+	if (prices[t][aai1] > prices[t - aai3][aai1]) return 1;
+	if (prices[t][aai1] < prices[t - aai3][aai1]) return -1;
 	else return 0;
 }
 int fundamentalist(int aai0, int aai1, int aai3)
