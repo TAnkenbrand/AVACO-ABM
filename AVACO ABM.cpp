@@ -127,7 +127,7 @@ int main()
 		}
 
 		ofstream TickerFile("AVACO ABM Ticker.csv", ios::app);
-		TickerFile << t << ";" << prices[t][1] << ";" << profit[t][1] << ";" << maxdrawdown[1] << ";" << trend[1] << ";" << efficency[1] << ";" << orders[1] << endl;
+		TickerFile << t << ";" << prices[t][1] << ";" << profit[t][1] << ";" << maxdrawdown[1] << ";" << trend[0] << ";" << efficency[1] << ";" << orders[1] << endl;
 		TickerFile.close();
 
 		//Learning / adaptation of the agents configuration
